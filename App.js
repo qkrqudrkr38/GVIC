@@ -8,13 +8,15 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // 서버 상태 확인 API
 app.get('/api/status', (req, res) => {
+  // 서버가 어디에 있든 항상 한국(Asia/Seoul) 시간으로 계산합니다.
+  const kstTime = new Date().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' });
+  
   res.json({
-    message: "서버가 아주 건강하게 작동 중입니다!",
-    serverTime: new Date().toLocaleString('ko-KR'),
+    message: "GVIC 글로벌 서버가 가동 중입니다!",
+    serverTime: kstTime,
     owner: "병각님"
   });
 });
-
 // 기본 페이지 설정
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public/index.html'));

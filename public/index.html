@@ -3,15 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GVIC - 실시간 서버 대화</title>
+    <title>GVIC - 글로벌 서버 상태</title>
     <style>
         body { font-family: 'Arial', sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .container { text-align: center; background: white; padding: 40px; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); width: 400px; }
+        .container { text-align: center; background: white; padding: 40px; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); width: 450px; }
         h1 { color: #1a73e8; font-size: 2.5rem; margin-bottom: 10px; }
-        .status-box { margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 12px; border: 1px solid #e8eaed; min-height: 100px; }
-        .btn { display: inline-block; margin-top: 20px; padding: 12px 30px; background-color: #1a73e8; color: white; text-decoration: none; border-radius: 100px; font-weight: bold; cursor: pointer; border: none; transition: 0.3s; }
+        .status-box { margin-top: 20px; padding: 20px; background: #f8f9fa; border-radius: 12px; border: 1px solid #e8eaed; text-align: left; }
+        .time-item { margin: 10px 0; padding: 10px; border-radius: 8px; background: white; border-left: 4px solid #1a73e8; }
+        .time-label { font-size: 0.8rem; color: #5f6368; font-weight: bold; text-transform: uppercase; }
+        .time-value { font-size: 1.1rem; color: #202124; margin-top: 4px; }
+        .btn { display: inline-block; margin-top: 20px; padding: 12px 30px; background-color: #1a73e8; color: white; text-decoration: none; border-radius: 100px; font-weight: bold; cursor: pointer; border: none; transition: 0.3s; width: 100%; }
         .btn:hover { background-color: #1557b0; transform: translateY(-2px); }
-        #time-display { color: #5f6368; font-size: 0.9rem; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -19,34 +21,51 @@
         <h1>GVIC</h1>
         <p>Global Value Industry Complex</p>
         
-        <div class="status-box" id="status-box">
-            <p id="message">버튼을 눌러 서버의 상태를 확인하세요.</p>
-            <p id="time-display"></p>
+        <div class="status-box">
+            <p id="message" style="text-align: center; font-weight: bold;">버튼을 눌러 글로벌 상태를 확인하세요.</p>
+            
+            <!-- 한국 서버 시간 표시 -->
+            <div class="time-item">
+                <div class="time-label">🇰🇷 Server Time (KST)</div>
+                <div id="server-time" class="time-value">-</div>
+            </div>
+
+            <!-- 사용자 현지 시간 표시 -->
+            <div class="time-item" style="border-left-color: #34a853;">
+                <div class="time-label">🌍 Your Local Time</div>
+                <div id="local-time" class="time-value">-</div>
+            </div>
         </div>
 
-        <button class="btn" onclick="checkServer()">서버 상태 확인하기</button>
+        <button class="btn" onclick="checkGlobalStatus()">실시간 상태 동기화</button>
     </div>
 
     <script>
-        // 서버에게 정보를 물어보는 함수입니다.
-        async function checkServer() {
+        async function checkGlobalStatus() {
             const messageElement = document.getElementById('message');
-            const timeElement = document.getElementById('time-display');
+            const serverTimeElement = document.getElementById('server-time');
+            const localTimeElement = document.getElementById('local-time');
             
-            messageElement.innerText = "서버와 통신 중...";
+            messageElement.innerText = "데이터 동기화 중...";
             
             try {
-                // 서버의 /api/status 주소로 질문을 던집니다.
+                // 1. 서버로부터 한국 시간 가져오기
                 const response = await fetch('/api/status');
                 const data = await response.json();
                 
-                // 서버가 보내준 답변을 화면에 뿌려줍니다.
+                // 2. 내 컴퓨터의 현지 시간 계산하기
+                const now = new Date();
+                const localTimeStr = now.toLocaleString(); // 접속한 사람의 설정에 맞게 자동 표시
+                
+                // 3. 화면에 표시
                 messageElement.innerText = data.message;
-                timeElement.innerText = "서버 시간: " + data.serverTime;
-                messageElement.style.color = "#1e8e3e"; // 초록색으로 변경
+                serverTimeElement.innerText = data.serverTime;
+                localTimeElement.innerText = localTimeStr;
+                
+                messageElement.style.color = "#1e8e3e";
             } catch (error) {
-                messageElement.innerText = "서버와 연결할 수 없습니다.";
-                messageElement.style.color = "#d93025"; // 빨간색으로 변경
+                messageElement.innerText = "서버 연결 실패";
+                messageElement.style.color = "#d93025";
             }
         }
     </script>
