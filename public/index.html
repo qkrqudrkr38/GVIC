@@ -3,22 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GVIC - Global Value Industry Complex</title>
+    <title>GVIC - 실시간 서버 대화</title>
     <style>
-        body { font-family: 'Arial', sans-serif; background-color: #f4f4f9; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .container { text-align: center; background: white; padding: 50px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        h1 { color: #2c3e50; font-size: 3rem; margin-bottom: 10px; }
-        p { color: #7f8c8d; font-size: 1.2rem; }
-        .btn { display: inline-block; margin-top: 20px; padding: 10px 25px; background-color: #3498db; color: white; text-decoration: none; border-radius: 5px; transition: 0.3s; }
-        .btn:hover { background-color: #2980b9; }
+        body { font-family: 'Arial', sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .container { text-align: center; background: white; padding: 40px; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); width: 400px; }
+        h1 { color: #1a73e8; font-size: 2.5rem; margin-bottom: 10px; }
+        .status-box { margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 12px; border: 1px solid #e8eaed; min-height: 100px; }
+        .btn { display: inline-block; margin-top: 20px; padding: 12px 30px; background-color: #1a73e8; color: white; text-decoration: none; border-radius: 100px; font-weight: bold; cursor: pointer; border: none; transition: 0.3s; }
+        .btn:hover { background-color: #1557b0; transform: translateY(-2px); }
+        #time-display { color: #5f6368; font-size: 0.9rem; margin-top: 10px; }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>GVIC</h1>
         <p>Global Value Industry Complex</p>
-        <p>병각님의 첫 번째 웹 서버가 성공적으로 가동 중입니다!</p>
-        <a href="#" class="btn">자세히 보기</a>
+        
+        <div class="status-box" id="status-box">
+            <p id="message">버튼을 눌러 서버의 상태를 확인하세요.</p>
+            <p id="time-display"></p>
+        </div>
+
+        <button class="btn" onclick="checkServer()">서버 상태 확인하기</button>
     </div>
+
+    <script>
+        // 서버에게 정보를 물어보는 함수입니다.
+        async function checkServer() {
+            const messageElement = document.getElementById('message');
+            const timeElement = document.getElementById('time-display');
+            
+            messageElement.innerText = "서버와 통신 중...";
+            
+            try {
+                // 서버의 /api/status 주소로 질문을 던집니다.
+                const response = await fetch('/api/status');
+                const data = await response.json();
+                
+                // 서버가 보내준 답변을 화면에 뿌려줍니다.
+                messageElement.innerText = data.message;
+                timeElement.innerText = "서버 시간: " + data.serverTime;
+                messageElement.style.color = "#1e8e3e"; // 초록색으로 변경
+            } catch (error) {
+                messageElement.innerText = "서버와 연결할 수 없습니다.";
+                messageElement.style.color = "#d93025"; // 빨간색으로 변경
+            }
+        }
+    </script>
 </body>
 </html>
