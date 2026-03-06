@@ -2,9 +2,9 @@
   "name": "gvic-server",
   "version": "1.0.0",
   "description": "GVIC 서버 배포 스타터 패키지",
-  "main": "src/app.js",
+  "main": "App.js",
   "scripts": {
-    "start": "node app.js",
+    "start": "node App.js",
     "test": "echo \"No tests yet\" && exit 0"
   },
   "dependencies": {
